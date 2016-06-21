@@ -22,8 +22,8 @@ end
 
 def print(students)
 	students.each_with_index do |student, index| 
-	first_letter = student[:name][0].upcase
-	puts "#{index+1}. #{student[:name]} (#{student[:cohort]} cohort)" if first_letter == "A"
+	name_length = student[:name].length
+	puts "#{index+1}. #{student[:name]} (#{student[:cohort]} cohort)" if name_length < 12
 	end
 end
 
