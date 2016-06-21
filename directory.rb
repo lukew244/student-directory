@@ -15,22 +15,28 @@ def input_students
 	return students
 end
 
+def center_text(text)
+	linewidth = 150
+	puts text.center(linewidth)
+end
+
 def print_header
-	puts "The students of Villains Academy"
-	puts "---------"
+	center_text("The students of Villains Academy")
+	center_text("---------")
 end
 
 def print(students)
 	idx = 0
 	while idx < students.length 
 	student = students[idx]
-	puts "#{idx+1}. #{student[:name]} (#{student[:cohort]} cohort)" 
+	center_text("#{idx+1}. #{student[:name]} (#{student[:cohort]} cohort)") 
 	idx += 1	
 	end
 end
 
 def print_footer(students) 
-	puts "Overall we have #{students.count} great students\n"
+	puts
+	center_text("Overall we have #{students.count} great students\n")
 end
 
 students = input_students
