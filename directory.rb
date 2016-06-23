@@ -1,36 +1,36 @@
-# collects names of students from the user and generates an array of hashes containing student data
+@students = []
 
 def interactive_menu
-
-	students = []
-	
 	loop do
-	puts "Please select a number from the following menu"
+	print_menu
+	process(gets.chomp)
+	end
+end
+
+def print_menu
+	puts "Please select a number from the following menu:"
 	puts "1. Input the students"
 	puts "2. Display student list" 
 	puts "9. Exit"
-	
-	selection = gets.chomp
-	
+end
+
+def process(selection)
 	case selection
 	when "1"
-		students = input_students
+		input_students
 	when "2"
-		display_list(students)
+		show_students
 	when "9"
 		exit		
 	else 
 		puts "Command not recognised, please re-enter:"
 	end
-	end
 end
-
 
 def input_students
 	puts "Please enter the name of the students"
 	puts "Hit return twice to finish"
- 
-	students = []
+
 	name = gets.chomp
 	
 	while !name.empty? do
@@ -38,13 +38,21 @@ def input_students
 	cohort = gets.chomp
 	cohort = :november if cohort.empty? 		#default value for cohort
 	
-	students << {name: name.to_sym, cohort: cohort.to_sym}
-	students.length > 1 ? puts("Now we have #{students.count} students") : puts("Now we have #{students.count} student") 
+	@students << {name: name.to_sym, cohort: cohort.to_sym}
+	@students.length > 1 ? puts("Now we have #{@students.count} students") : puts("Now we have #{@students.count} student") 
 	puts "Please enter the name of the next student or hit return twice to finish"
 	name = gets.chomp
 	end
+end
 
-	return students
+def show_students
+if @students.length > 0
+        print_header
+        print_students_by_cohort
+        print_footer
+else
+        puts "No names were entered"
+end
 end
 
 def center_text(text)
@@ -57,25 +65,23 @@ def print_header
 	center_text("---------")
 end
 
-def print(students)
-	students.each_with_index do |student, index|
+def print_students
+	@students.each_with_index do |student, index|
 	center_text("#{index}. #{student[:name]} (#{student[:cohort]} cohort)") 
 	end	
 end
 
-
-
-def print_by_cohort(students)
+def print_students_by_cohort
 	cohort_list = []	
 	
-	students.map do |student|
+	@students.map do |student|
 		cohort_list.push(student[:cohort])
 	end
 
 	cohort_list = cohort_list.uniq.sort
 
 	cohort_list.each do |cohort|
-		students.each do |student|
+		@students.each do |student|
 			if student[:cohort] == cohort
 			center_text("#{student[:name]} #{student[:cohort]}")
 			end
@@ -83,19 +89,10 @@ def print_by_cohort(students)
 	end
 end
 
-def print_footer(students) 
+def print_footer 
 	puts
-	center_text("Overall we have #{students.count} great students\n")
+	center_text("Overall we have #{@students.count} great students\n")
 end
 
-def display_list(students)
-if students.length > 0 
-	print_header
-	print_by_cohort(students)
-	print_footer(students)
-else
-	puts "No names were entered"
-end
-end
 
 interactive_menu
