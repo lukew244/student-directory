@@ -7,8 +7,13 @@ def input_students
 	name = gets.chomp
 	
 	while !name.empty? do
-	students << {name: name, cohort: :november}
-	puts "Now we have #{students.count} students"
+	puts "Which cohort is #{name} in?"
+	cohort = gets.chomp
+	cohort = :november if cohort.empty? 		#default value for cohort
+	
+	students << {name: name.to_sym, cohort: cohort.to_sym}
+	students.length > 1 ? puts("Now we have #{students.count} students") : puts("Now we have #{students.count} student") 
+	puts "Please enter the name of the next student or hit return twice to finish"
 	name = gets.chomp
 	end
 
@@ -26,11 +31,28 @@ def print_header
 end
 
 def print(students)
-	idx = 0
-	while idx < students.length 
-	student = students[idx]
-	center_text("#{idx+1}. #{student[:name]} (#{student[:cohort]} cohort)") 
-	idx += 1	
+	students.each_with_index do |student, index|
+	center_text("#{index}. #{student[:name]} (#{student[:cohort]} cohort)") 
+	end	
+end
+
+
+
+def print_by_cohort(students)
+	cohort_list = []	
+	
+	students.map do |student|
+		cohort_list.push(student[:cohort])
+	end
+
+	cohort_list = cohort_list.uniq.sort
+
+	cohort_list.each do |cohort|
+		students.each do |student|
+			if student[:cohort] == cohort
+			center_text("#{student[:name]} #{student[:cohort]}")
+			end
+		end
 	end
 end
 
@@ -41,5 +63,5 @@ end
 
 students = input_students
 print_header
-print(students)
+print_by_cohort(students)
 print_footer(students)
