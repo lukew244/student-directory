@@ -1,4 +1,31 @@
 # collects names of students from the user and generates an array of hashes containing student data
+
+def interactive_menu
+
+	students = []
+	
+	loop do
+	puts "Please select a number from the following menu"
+	puts "1. Input the students"
+	puts "2. Display student list" 
+	puts "9. Exit"
+	
+	selection = gets.chomp
+	
+	case selection
+	when "1"
+		students = input_students
+	when "2"
+		display_list(students)
+	when "9"
+		exit		
+	else 
+		puts "Command not recognised, please re-enter:"
+	end
+	end
+end
+
+
 def input_students
 	puts "Please enter the name of the students"
 	puts "Hit return twice to finish"
@@ -61,8 +88,7 @@ def print_footer(students)
 	center_text("Overall we have #{students.count} great students\n")
 end
 
-students = input_students
-
+def display_list(students)
 if students.length > 0 
 	print_header
 	print_by_cohort(students)
@@ -70,3 +96,6 @@ if students.length > 0
 else
 	puts "No names were entered"
 end
+end
+
+interactive_menu
