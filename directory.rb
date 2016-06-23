@@ -4,11 +4,11 @@ def input_students
 	puts "Hit return twice to finish"
  
 	students = []
-	name = gets.chomp
+	name = gets.slice(0..-2)
 	
 	while !name.empty? do
 	puts "Which cohort is #{name} in?"
-	cohort = gets.chomp
+	cohort = gets.chop
 	cohort = :november if cohort.empty? 		#default value for cohort
 	
 	students << {name: name.to_sym, cohort: cohort.to_sym}
