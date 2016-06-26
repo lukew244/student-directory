@@ -3,7 +3,7 @@
 def interactive_menu
 	loop do
 	print_menu
-	process(gets.chomp)
+	process(STDIN.gets.chomp)
 	end
 end
 
@@ -37,17 +37,17 @@ def input_students
 	puts "Please enter the name of the students"
 	puts "Hit return twice to finish"
 
-	name = gets.chomp
+	name = STDIN.gets.chomp
 	
 	while !name.empty? do
 	puts "Which cohort is #{name} in?"
-	cohort = gets.chomp
+	cohort = STDIN.gets.chomp
 	cohort = :november if cohort.empty? 		#default value for cohort
 	
 	@students << {name: name.to_sym, cohort: cohort.to_sym}
 	@students.length > 1 ? puts("Now we have #{@students.count} students") : puts("Now we have #{@students.count} student") 
 	puts "Please enter the name of the next student or hit return twice to finish"
-	name = gets.chomp
+	name = STDIN.gets.chomp
 	end
 end
 
@@ -112,8 +112,23 @@ def save_students
 	file.close
 end
 
-def load_students
-	file = File.open("students.csv","r")
+def try_load_students
+	filename = ARGV.first
+	return if filename.nil?
+	
+	if File.exists?(filename)
+	load_students(filename)
+	puts "Loaded #{@students.count} from #{filename}"
+	else 
+	puts "File #{filename} does not exist"
+	exit 
+	end
+
+end
+
+
+def load_students(filename = "students.csv")
+	file = File.open(filename,"r")
 	
 	file.readlines.each do |line|
 	name, cohort = line.chomp.split(",")
@@ -123,5 +138,5 @@ def load_students
 	file.close
 end
 
-
+try_load_students
 interactive_menu
