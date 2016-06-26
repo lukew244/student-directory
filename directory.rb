@@ -11,8 +11,8 @@ def print_menu
 	puts "Please select a number from the following menu:"
 	puts "1. Input the students"
 	puts "2. Display student list" 
-	puts "3. Save list to students.csv"
-	puts "4. Load the list from students.csv"
+	puts "3. Save list to a file"
+	puts "4. Load list from a file"
 	puts "9. Exit"
 end
 
@@ -23,9 +23,11 @@ def process(selection)
 	when "2"
 		show_students
 	when "3"
-		save_students
+		filename = ask_for_filename
+		save_students(filename)
 	when "4" 
-		load_students
+		filename = ask_for_filename
+		load_students(filename)
 	when "9"
 		exit		
 	else 
@@ -34,31 +36,29 @@ def process(selection)
 end
 
 def input_students
-	puts "Please enter the name of the students"
-	puts "Hit return twice to finish"
-
+	puts "Please enter the name of a student, or hit return to finish"
 	name = STDIN.gets.chomp
 	
 	while !name.empty? do
-	puts "Which cohort is #{name} in?"
-	cohort = STDIN.gets.chomp
-	cohort = :november if cohort.empty? 		#default value for cohort
+		puts "Which cohort is #{name} in?"
+		cohort = STDIN.gets.chomp
+		cohort = :unspecified if cohort.empty? 		#default value for cohort
 	
-	@students << {name: name.to_sym, cohort: cohort.to_sym}
-	@students.length > 1 ? puts("Now we have #{@students.count} students") : puts("Now we have #{@students.count} student") 
-	puts "Please enter the name of the next student or hit return twice to finish"
-	name = STDIN.gets.chomp
+		import_students_to_hash(name, cohort)
+		@students.length > 1 ? puts("Now we have #{@students.count} students") : puts("Now we have #{@students.count} student") 
+		puts "Please enter the name of the next student or hit return twice to finish"
+		name = STDIN.gets.chomp
 	end
 end
 
 def show_students
-if @students.length > 0
-        print_header
-        print_students_by_cohort
+	if @students.length > 0
+       	print_header
+        print_students
         print_footer
-else
+	else
         puts "No names were entered"
-end
+	end
 end
 
 def center_text(text)
@@ -73,26 +73,8 @@ end
 
 def print_students
 	@students.each_with_index do |student, index|
-	center_text("#{index}. #{student[:name]} (#{student[:cohort]} cohort)") 
+	center_text("#{index+1}. #{student[:name]} (#{student[:cohort]} cohort)") 
 	end	
-end
-
-def print_students_by_cohort
-	cohort_list = []	
-	
-	@students.map do |student|
-		cohort_list.push(student[:cohort])
-	end
-
-	cohort_list = cohort_list.uniq.sort
-
-	cohort_list.each do |cohort|
-		@students.each do |student|
-			if student[:cohort] == cohort
-			center_text("#{student[:name]} #{student[:cohort]}")
-			end
-		end
-	end
 end
 
 def print_footer 
@@ -100,21 +82,21 @@ def print_footer
 	center_text("Overall we have #{@students.count} great students\n")
 end
 
-def save_students
-	file = File.open("students.csv", "w")
+def save_students(filename = "students.csv")
 
-	@students.each do |student|
-	student_data = [student[:name], student[:cohort]]
-	csv_line = student_data.join(",")
-	file.puts(csv_line)
+	file = File.open(filename, "w") do |file|
+		@students.each do |student|
+		student_data = [student[:name], student[:cohort]]
+		csv_line = student_data.join(",")
+		file.puts(csv_line)
+		end
 	end
-
-	file.close
+	success_message
 end
 
 def try_load_students
 	filename = ARGV.first
-	return if filename.nil?
+	return load_students if filename.nil?
 	
 	if File.exists?(filename)
 	load_students(filename)
@@ -126,17 +108,32 @@ def try_load_students
 
 end
 
-
 def load_students(filename = "students.csv")
-	file = File.open(filename,"r")
-	
-	file.readlines.each do |line|
-	name, cohort = line.chomp.split(",")
-	@students << {name: name, cohort: cohort.to_sym}
+	file = File.open(filename,"r") do |file|
+		file.readlines.each do |line|
+		name, cohort = line.chomp.split(",")
+		import_students_to_hash(name, cohort)
+		end
 	end
-
-	file.close
+	success_message
 end
+
+def import_students_to_hash(name, cohort)
+	@students << {name: name.to_sym, cohort: cohort.to_sym} 
+end
+
+def success_message
+	puts "Operation completed successfully"
+end
+
+def ask_for_filename
+	puts "Please specify a filename or hit return to use students.csv"
+	filename = STDIN.gets.chomp
+	filename = "students.csv" if filename.empty?
+	return filename
+end
+
+
 
 try_load_students
 interactive_menu
