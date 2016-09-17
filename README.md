@@ -1,6 +1,6 @@
 # Student Directory #
 
-The student directory script allows you to manage the list of students enrolled at Villain's Academy.
+A simple Ruby script for managing a student directory that can be saved/loaded from a CSV file. One of the very first coding exercises I attempted, during the second week of the Makers Academy pre-course.
 
 ## How to Use ##
 
